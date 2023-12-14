@@ -1,0 +1,17 @@
+<div class="mt-5">
+    <div>
+        <div *ngFor="let message of chatHistory" class="mb-3">
+            <div *ngIf="message.role === 'user'" class="col-8 p-2 rounded bg-primary-subtle bg-gradient">
+                {{ message.content }}
+            </div>
+            <div *ngIf="message.role === 'assistant'" class="col-8 p-2 rounded bg-success-subtle bg-gradient ms-auto">
+                {{ message.content }}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex">
+        <input [(ngModel)]="prompt" type="text" class="form-control" placeholder="Type your message...">
+        <button class="btn btn-primary" type="button" (click)="submitPrompt()">Send</button>
+    </div>
+</div>
