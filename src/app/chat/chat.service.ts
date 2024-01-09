@@ -25,14 +25,22 @@ export class ChatService {
   private currentChatSubject = new BehaviorSubject<Chat | null>(null);
   currentChat$ = this.currentChatSubject.asObservable();
 
-  constructor() { 
+  constructor() {
     try {
       this.openai = new OpenAI({
         dangerouslyAllowBrowser: true,
         apiKey: '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',
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
+    }
+
+    // Retrieve chats from localStorage when the service is created
+    const storedChats = localStorage.getItem('chats');
+    this.chatsSubject.next(storedChats ? JSON.parse(storedChats) : []);
+
+    if (storedChats) {
+      this.selectChat(JSON.parse(storedChats)[0]);
     }
   }
 
@@ -41,14 +49,17 @@ export class ChatService {
   }
 
   formatTitle(title: string): string {
-    return this.validateTitle(title) ? title : this.formatTitle(`${title} - copy`)
+    return this.validateTitle(title) ? title : this.formatTitle(`${title} - copy`);
   }
 
   createChat(single: boolean) {
     // Create a new chat and add it to the chats array
     const newChat = { single, history: [], title: this.formatTitle('untitled') };
     const currentChats = this.chatsSubject.value;
-    const updatedChats: Chat [] = [...currentChats, newChat];
+    const updatedChats: Chat[] = [...currentChats, newChat];
+
+    // Save the updated chats to localStorage
+    localStorage.setItem('chats', JSON.stringify(updatedChats));
 
     // Notify subscribers about the updated chats array
     this.chatsSubject.next(updatedChats);
@@ -57,9 +68,31 @@ export class ChatService {
     this.currentChatSubject.next(newChat);
   }
 
+  updateChatTitle(chat: Chat, title: string) {
+    const chats = this.chatsSubject.value;
+    const chatIndex = chats.findIndex(ch => ch.title === chat.title);
+    
+    if (chatIndex >= 0) {
+      // chat.title = title;
+      chats.splice(chatIndex, 1, {...chat, title: this.formatTitle(title)});
+
+      // Save the updated chats to localStorage
+      localStorage.setItem('chats', JSON.stringify(chats));
+
+      // Notify subscribers about the updated chats array
+      this.chatsSubject.next(chats);
+
+      // Notify subscribers about the updated current chat
+      this.currentChatSubject.next(chat);
+    }
+  }
+
   deleteChat(chat: Chat) {
     const currentChats = this.chatsSubject.value;
-    const updatedChats = currentChats.filter(ch => chat.title !== ch.title)
+    const updatedChats = currentChats.filter((ch) => chat.title !== ch.title);
+
+    // Save the updated chats to localStorage
+    localStorage.setItem('chats', JSON.stringify(updatedChats));
 
     // Notify subscribers about the updated chats array
     this.chatsSubject.next(updatedChats);
@@ -87,6 +120,10 @@ export class ChatService {
     const currentChat = this.currentChatSubject.value;
     if (currentChat) {
       currentChat.history.push(newMessage);
+
+      // Save the updated chats to localStorage
+      localStorage.setItem('chats', JSON.stringify(this.chatsSubject.value));
+
       this.chatsSubject.next([...this.chatsSubject.value]);
       this.currentChatSubject.next({ ...currentChat });
     }

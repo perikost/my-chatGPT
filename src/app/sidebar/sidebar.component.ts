@@ -48,7 +48,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   editChatTitle(chat: Chat) {
     this.modalService.open(this.editChatModal, { centered: true }).result.then(
       (result) => {
-        chat.title = result;
+        this.chatService.updateChatTitle(chat, result);
       },
       (reason) => {
         console.log('Modal dismissed')
