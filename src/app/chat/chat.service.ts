@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 
 export interface Chat {
   single: boolean;
-  history: Message [];
+  history: (Message | OpenAI.Chat.ChatCompletionMessage) [];
   title: string;
 }
 
@@ -83,7 +83,7 @@ export class ChatService {
     return this.openai.chat.completions.create(params).then(({ choices }: OpenAI.Chat.ChatCompletion) => choices[0].message);
   }
 
-  addMessage(newMessage: Message) {
+  addMessage(newMessage: Message | OpenAI.Chat.ChatCompletionMessage) {
     const currentChat = this.currentChatSubject.value;
     if (currentChat) {
       currentChat.history.push(newMessage);

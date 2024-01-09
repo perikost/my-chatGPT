@@ -1,32 +1,49 @@
-import { Component } from '@angular/core';
-import { ChatService } from './chat.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Chat, ChatService } from './chat.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './chat.component.html',
-  styleUrl: './chat.component.scss',
-  providers: [ChatService]
+  styleUrl: './chat.component.scss'
 })
-export class ChatComponent {
+export class ChatComponent implements OnInit, OnDestroy {
+  private subscription: Subscription | undefined;
   public prompt: string = '';
-  public chatHistory: any[] = [];
+  public chat: Chat | null = null;
 
-  constructor(private chat: ChatService) {}
+  constructor(private chatService: ChatService) {}
+
+  ngOnInit() {
+    this.subscription = this.chatService.currentChat$.subscribe(chat => {
+      this.chat = chat;
+      this.prompt = '';
+    });
+  }
 
   async submitPrompt(){
     try {
       const prompt = { role: "user", content: this.prompt };
-      this.chatHistory.push(prompt);
+      this.chatService.addMessage(prompt);
 
-      const answer = await this.chat.send([prompt]);
-      this.chatHistory.push(answer)
-
+      if (this.chat) {
+        const answer = this.chat.single 
+          ? await this.chatService.send([prompt])
+          : await this.chatService.send(this.chat.history)
+        this.chatService.addMessage(answer);
+      }
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
   }
 }
