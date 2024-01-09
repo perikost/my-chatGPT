@@ -1,6 +1,41 @@
-<div class="app-sidebar">
-    <h2>Sidebar</h2>
-    <ul>
-        <li><a routerLink="">Home</a></li>
-    </ul>
+<div class="row my-4">
+    <div ngbDropdown class="d-inline-block">
+        <button type="button" class="btn btn-outline-light" id="dropdownBasic1" ngbDropdownToggle>
+            <fa-icon [icon]="faPlus"></fa-icon>
+            new chat
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+            <button ngbDropdownItem (click)="newChat(false)">Chat</button>
+            <button ngbDropdownItem (click)="newChat(true)">Single Prompts</button>
+        </div>
+    </div>
 </div>
+
+<ul class="text-light list-group">
+    <li *ngFor="let chat of chats" class="list-group-item bg-secondary chat" [ngClass]="{'active': chat.title === currentChat?.title}">
+        <div (click)="selectChat(chat)" class="d-flex justify-content-between align-items-center">
+            <span class="title">{{ chat.title }}</span>
+            <div>
+                <i class="px-2" (click)="editChatTitle(chat)"><fa-icon [icon]="faEdit"></fa-icon></i>
+                <i class="px-2" (click)="deleteChat(chat)"><fa-icon [icon]="faTrash"></fa-icon></i>
+            </div>
+        </div>
+    </li>
+</ul>
+
+<ng-template #editChatModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Rename Chat</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="mb-3">
+                <input #newTitle type="text" class="form-control" placeholder="Enter new title">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" (click)="modal.close(newTitle.value)">Save</button>
+    </div>
+</ng-template>

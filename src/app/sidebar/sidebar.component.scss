@@ -1,0 +1,9 @@
+.list-group-item.chat {
+    border: none;
+    border-radius: 0%;
+}
+
+.list-group-item.chat.active {
+    color: black !important;
+    background-color: white !important;
+}
