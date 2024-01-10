@@ -7,11 +7,12 @@ import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Chat, ChatService } from '../chat/chat.service';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { FilterPipe } from './filter.pipe';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NgbModule, FontAwesomeModule, FormsModule],
+  imports: [CommonModule, RouterOutlet, NgbModule, FontAwesomeModule, FormsModule, FilterPipe],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })
