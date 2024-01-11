@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import OpenAI from 'openai';
+import { environment } from '../../environments/environment';
 
 export interface Chat {
   single: boolean;
@@ -29,7 +30,7 @@ export class ChatService {
     try {
       this.openai = new OpenAI({
         dangerouslyAllowBrowser: true,
-        apiKey: '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',
+        apiKey: environment.openaiKey,
       });
     } catch (error) {
       console.log(error);
